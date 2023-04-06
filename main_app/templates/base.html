@@ -1,0 +1,57 @@
+<!-- NOTE: load static informs the server static assets are needed here -->
+<!--  allows reference static files such as CSS, JavaScript, and images in your HTML templates -->
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width='device-width', initial-scale=1.0">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- materialized jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Example of how we'd do this in js static files -->
+    <!-- <script defer src="{%static 'js/script.js'%}"></script> -->
+    {% block title %}
+    <title>Cat Collector</title>
+    {% endblock %}
+</head>
+<body>
+    <!-- all these classes are from materializecss -->
+    <header class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper deep purple">
+                <a class="left brand-logo" href="{% url 'home' %}">Cat Collector</a>
+                <ul class="right"> 
+                    <li> 
+                        <a href="{% url 'about' %}">About</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'cats_index' %}">View All Cats</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'toys_index' %}">View All Toys</a>
+                    <li>
+                        <a href="{% url 'cats_create' %}">Add A Cat</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'toys_create' %}">Add A Toy</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer class="page-footer deep purple">
+        <p>Copyright &copy; All Rights Reserved Cat Collector 2023</p>
+    </footer>
+</body>
+</html>
