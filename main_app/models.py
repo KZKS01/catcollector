@@ -1,22 +1,10 @@
 from django.db import models
 from django.urls import reverse
+from datetime import date
+from django.contrib.auth.models import User
 
 # Create your models here.
-class Cat(models.Model):
-    name = models.CharField(max_length=100) # varchar datatype
-    breed = models.CharField(max_length=100) # varchar datatype
-    description = models.TextField(max_length=250) # text datatype
-    age = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.name
-    
-    # this instance method returns a url for the detail pg for each instance
-    # this concept is based on "fat models skinny controllers"
-    def get_absolute_url(self):
-        return reverse('cats_detail', kwargs={'cat_id': self.id})
-    
-
+# toy needs to be up here for line 23 to work
 class Toy(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=20)
@@ -26,6 +14,27 @@ class Toy(models.Model):
     
     def get_absolute_url(self):
         return reverse('toys_detail', kwargs={'toy_id': self.id})
+    
+
+class Cat(models.Model):
+    name = models.CharField(max_length=100) # varchar datatype
+    breed = models.CharField(max_length=100) # varchar datatype
+    description = models.TextField(max_length=250) # text datatype
+    age = models.IntegerField(default=0)
+    toys = models.ManyToManyField(Toy) # line 23 
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # here bc Cat is on the Many side; if user gets deleted, the cats will be deleted here
+    def __str__(self):
+        return self.name
+    
+    # this instance method returns a url for the detail pg for each instance
+    # to link to individual instances of the model in the templates
+
+    # this concept is based on "fat models skinny controllers"
+    # emphasizes placing most of the logic and behavior of an app's business domain within the model, rather than in the controller layer
+    def get_absolute_url(self):
+        return reverse('cats_detail', kwargs={'cat_id': self.id})
+    
+
     
 class Feeding(models.Model):
     MEALS = (
@@ -50,5 +59,25 @@ class Feeding(models.Model):
 
     def fed_for_today(self):
         # When a FK field is defined in a model, Django creates a reverse relation on the other side of the relationship. 
-        # it means that the Cat model has a related name of feeding_set, it gives access to all the Feeding objects related to a specific Cat instance using the feeding_set attr
-        return self.feeding_set.filter(date=date.today().count()>= len(MEALS))
+        # bc Cat has a ForeignKey to Feeding, Django creates a reverse relation on Cat called feeding_set.
+
+        # By default, this reverse relation is named lowercase_relatedmodelname_set, relatedmodelname is the name of the related model
+        # it means that the Cat model has a related name of feeding_set, 
+        # it gives access to all the Feeding objects related to a specific Cat instance using the feeding_set attr
+        count = self.feeding_set.filter(date=date.today()).count
+        expected_count = len(MEALS)
+        result = count >= expected_count
+        print(f"Today's date: {date.today()}")
+        print(f"Number of meals: {len(MEALS)}")
+        return result
+        # return self.feeding_set.filter(date=date.today()).count()>= len(MEALS)
+
+        # .count()>= len(MEALS) checks if the num of feeding that occurred on the current date is >= total num of possible meals, which is stored in the MEALS tuple
+
+class Photo(models.Model):
+    url = models.CharField(max_length=200)
+    # reference cat for each model
+    cat = models.ForeignKey(Cat, on_delete=models.CASCADE) 
+
+    def __str__(self):
+        return f"photo for cat_id: {self.cat_id} @{self.url}"

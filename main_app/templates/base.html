@@ -31,6 +31,7 @@
                     <li> 
                         <a href="{% url 'about' %}">About</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li>
                         <a href="{% url 'cats_index' %}">View All Cats</a>
                     </li>
@@ -42,6 +43,17 @@
                     <li>
                         <a href="{% url 'toys_create' %}">Add A Toy</a>
                     </li>
+                    <li>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'signup' %}">Signup</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </nav>

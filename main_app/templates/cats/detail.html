@@ -26,13 +26,41 @@
                 <a href="{% url 'cat_delete' cat.id %}">Delete</a>
             </div>
         </div>
+    <!-- Display photos -->
+    {% for photo in cat.photo_set.all %}
+        <img src="{{ photo.url }}" alt="{{ cat.name }}" class="responsive-img card-panel">
+    {% empty %}
+        <div class="card-panel blue-text center-align">No Photos Uploaded</div>
+    {% endfor %}
+
+    <!-- Upload photos -->
+    <form 
+        action="{% url 'add_photo' cat.id %}" 
+        method="POST" 
+        class="card-panel"
+        enctype="multipart/form-data"
+    >
+        {% csrf_token %}
+        <input type="file" name="photo-file">
+        <input class="btn blue" type="submit" value="Upload Photo">
+    </form>
     </div>
+
     <div class="col s6">
         <form action="{% url 'add_feeding' cat.id %}" method="POST">
             {% csrf_token %}
             {{ feeding_form.as_p }}
             <input type="submit" value="Add Feeding" class="btn blue">
         </form>
+        {% if cat.fed_for_today %}
+        <div class="card-panel teal-text center-align">
+            {{cat.name}} has been fed all meals for today
+        </div>
+        {% else %}
+        <div class="card-panel red-text center-align">
+            {{cat.name}} might be hungry
+        </div>
+        {% endif %}
         <table class="striped">
             <thead>
                 <tr>
@@ -49,6 +77,52 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col s6">
+        <h3>{{ cat.name }}'s Toys</h3>
+        {% if cat.toys.count %}
+            {% for toy in cat.toys.all %}
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">A <span class="{{toy.color.lower}}-text">{{toy.color.capitalize}}</span> {{toy.name}}</span>
+                    </div>
+                    <div class="class card-action">
+                        <form action="{% url 'unassoc_toy' cat.id toy.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="submit" value="Remove" class="btn blue">
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+            {% else %}
+            <h5>{{cat.name}} doesn't have any toys yet 😿</h5>
+        {% endif %}
+    </div>
+<div class="row">
+    <div class="col s6">
+        <h3>Available Toys</h3>
+        {% if toys.count %}
+            {% for toy in toys %}
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">A <span class="{{toy.color.lower}}-text">{{toy.color.capitalize}}</span> {{toy.name}}</span>
+                    </div>
+                    <div class="card-action">
+                        <form action="{% url 'assoc_toy' cat.id toy.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="submit" value="Add" class="btn blue">
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <h5>{{cat.name}} Has All Available Toys</h5>
+        {% endif %}
     </div>
 </div>
 

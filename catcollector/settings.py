@@ -25,7 +25,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-import environ
+import environ # from django-environ pkage --pip install django-environ
 
 environ.Env()
 environ.Env.read_env() #config it
@@ -132,10 +132,14 @@ USE_I18N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+LOGIN_REDIRECT_URL = '/cats/' # NOTE: 1st / ensures that cats/ doesn't get appended to /accounts/login/cats
+LOGOUT_REDIRECT_URL = '/' # / make sure nothing gets prepended before or after the url
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
